@@ -1,15 +1,29 @@
 public class Radix {
+    
     public static int nth(int n, int col) {
-        return Math.abs((n - (n % (int) Math.pow(10, col))) / (int) Math.pow(10, col) % 10);
+        int pow10 = (int) Math.pow(10, col);
+        return Math.abs((n - (n % pow10)) / pow10 % 10);
     }
 
     public static int length(int n) {
-        if (n == 0) {
-            return 1;
-        } else {
-            int x = Math.abs(n);
-            return (int) Math.floor(Math.log10(x)) + 1;
-        }
+        int x = Math.abs(n);
+        if (x >= 1000000000) return 10;
+        else if (x >= 100000000) return 9;
+        else if (x >= 10000000) return 8;
+        else if (x >= 1000000) return 7;
+        else if (x >= 100000) return 6;
+        else if (x >= 10000) return 5;
+        else if (x >= 1000) return 4;
+        else if (x >= 100) return 3;
+        else if (x >= 10) return 2;
+        else return 1;
+
+        // if (n == 0) {
+        //     return 1;
+        // } else {
+        //     int x = Math.abs(n);
+        //     return (int) Math.floor(Math.log10(x)) + 1;
+        // }
     }
 
     public static void merge(SortableLinkedList original, SortableLinkedList[] buckets) {
@@ -20,7 +34,6 @@ public class Radix {
 
     private static void mergeNeg(SortableLinkedList original, SortableLinkedList[] buckets) {
         for (int i = buckets.length - 1; i >= 0; i--) {
-            System.out.println(buckets[i]);
             original.extend(buckets[i]);
         }
     }
@@ -28,8 +41,23 @@ public class Radix {
     public static void radixSortSimple(SortableLinkedList data) {
         if (data.size() > 1) {
             int maxLength = getMaxLength(data);
+            SortableLinkedList[] buckets = new SortableLinkedList[10];
+            for (int j = 0; j < buckets.length; j++) {
+                buckets[j] = new SortableLinkedList();
+            }
             for (int i = 0; i < maxLength; i++) {
-                sortOnce(data, i);
+
+                // Move to buckets
+                
+                while (data.size() > 0) {
+                    int n = data.get(0);
+                    data.remove(0);
+                    int digit = nth(n, i);
+                    buckets[digit].add(n);
+                }
+
+                // Merge
+                merge(data, buckets);
             }
         }
     }
@@ -71,25 +99,6 @@ public class Radix {
 
     }
 
-    private static void sortOnce(SortableLinkedList data, int i) {
-        // Init buckets
-        SortableLinkedList[] buckets = new SortableLinkedList[10];
-        for (int j = 0; j < buckets.length; j++) {
-            buckets[j] = new SortableLinkedList();
-        }
-
-        // Move to buckets
-        int size = data.size();
-        for (int j = 0; j < size; j++) {
-            int n = data.get(0);
-            data.remove(0);
-            int digit = nth(n, i);
-            buckets[digit].add(n);
-        }
-
-        // Merge
-        merge(data, buckets);
-    }
 
     private static void sortOnceNeg(SortableLinkedList data, int i) {
         // Init buckets
@@ -113,19 +122,17 @@ public class Radix {
 
     private static int getMaxLength(SortableLinkedList data) {
         if (data.size() > 0) {
-            int temp = data.get(0);
-            int maxLen = length(temp);
-            data.remove(0);
-            data.add(temp);
-            for (int i = 0; i < data.size() - 1; i++) {
-                temp = data.get(0);
-                if (length(temp) > maxLen) {
-                    maxLen = length(temp);
+            int max = 0;
+            for (int i = 0; i < data.size(); i++) {
+                int temp = data.get(0);
+                int tempAbs = Math.abs(temp);
+                if (tempAbs > max) {
+                    max = tempAbs;
                 }
                 data.remove(0);
                 data.add(temp);
             }
-            return maxLen;
+            return length(max);
         } else
             throw new IllegalArgumentException("Data size is less than 1");
     }
