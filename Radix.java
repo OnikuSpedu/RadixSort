@@ -18,7 +18,7 @@ public class Radix {
         }
     }
 
-    public static void mergeNeg(SortableLinkedList original, SortableLinkedList[] buckets) {
+    private static void mergeNeg(SortableLinkedList original, SortableLinkedList[] buckets) {
         for (int i = buckets.length - 1; i >= 0; i--) {
             System.out.println(buckets[i]);
             original.extend(buckets[i]);
@@ -34,7 +34,7 @@ public class Radix {
         }
     }
 
-    public static void radixSortNeg(SortableLinkedList data) {
+    private static void radixSortNeg(SortableLinkedList data) {
         if (data.size() > 1) {
             int maxLength = getMaxLength(data);
             for (int i = 0; i < maxLength; i++) {
@@ -44,9 +44,9 @@ public class Radix {
     }
 
     public static void radixSort(SortableLinkedList data) {
-        //The goal will be to split into two linked lists. 
-        //One for nonnegative other for positive. Sort them. 
-        //Then merge at the end.
+        // The goal will be to split into two linked lists.
+        // One for nonnegative other for positive. Sort them.
+        // Then merge at the end.
 
         SortableLinkedList nonNegative = new SortableLinkedList();
         SortableLinkedList negative = new SortableLinkedList();
@@ -55,7 +55,7 @@ public class Radix {
         for (int i = 0; i < size; i++) {
             int n = data.get(0);
             data.remove(0);
-            
+
             if (n >= 0) {
                 nonNegative.add(n);
             } else {
@@ -129,4 +129,5 @@ public class Radix {
         } else
             throw new IllegalArgumentException("Data size is less than 1");
     }
+
 }
